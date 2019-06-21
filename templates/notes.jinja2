@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <style>
+            body {
+                color: #333;
+                background: #eee;
+                font-family: sans-serif;
+            }
+            main {
+                background: #fff;
+                margin-top: 20px;
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 1000px;
+                padding: 10px;
+                box-shadow: #ccc 0px 5px 10px;
+                border-radius: 2px;
+            }
+        </style>
+        <title>{{title}}</title>
+    </head>
+    <body>
+        <main>
+            {% autoescape false%}
+            {{body}}
+            {% endautoescape %}
+        </main>
+    </body>
+</html>
