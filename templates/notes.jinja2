@@ -18,9 +18,11 @@
             }
         </style>
         <title>{{title}}</title>
+        <script src="/js/tree.js"></script>
     </head>
-    <body>
+    <body onload="render_tree('tree')">
         <main>
+            <div id="tree"></div>
             {% autoescape false%}
             {{body}}
             {% endautoescape %}
