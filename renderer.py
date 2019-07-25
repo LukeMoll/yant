@@ -4,6 +4,10 @@ import jinja2
 import markdown2
 import yaml
 
+
+# TODO:
+# - Add filesystem support to context
+
 class Renderer:
 
     def __init__(self, baseDir):
@@ -50,7 +54,6 @@ class Renderer:
 
         obj = {}        
         if os.path.exists(filename):
-            print("Loading", filename)
             with open(filename) as fd:
                 obj = yaml.safe_load(fd)
         
@@ -70,9 +73,7 @@ class Renderer:
             return self.md2.convert(fd.read())
 
     def exists(self, path):
-        print("?exists", path)
         norm = self.normalize(path)
-        print(" n:", norm)
         return os.path.exists(norm)
 
 def merge(*args): 

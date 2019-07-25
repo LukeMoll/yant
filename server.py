@@ -1,5 +1,6 @@
 import os.path
 import flask
+import argparse
 
 from renderer import Renderer
 
@@ -33,6 +34,15 @@ class Server:
         self.app.run(host="localhost", port=port)
 
 
+def do_args():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("basedir", type=str, help="path to directory containing notes")
+    parser.add_argument("--port", "-p", type=int, default=8000, help="port listen on (default 8000)")
+
+    return parser.parse_args()
+
 if __name__ == "__main__":
-    s = Server("tmp/")
-    s.start()
+    args = do_args()
+    s = Server(args.basedir)
+    s.start(port=args.port)
