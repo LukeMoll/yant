@@ -5,6 +5,9 @@ import markdown2
 import yaml
 
 
+import sys
+sys.setrecursionlimit(100)
+
 # TODO:
 # - Add filesystem support to context
 
