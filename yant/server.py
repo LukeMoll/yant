@@ -1,5 +1,6 @@
 import os.path
 import flask
+from wsgiref import simple_server
 
 from .renderer import Renderer
 
@@ -11,8 +12,6 @@ class Server:
         self.baseDir = os.path.abspath(baseDir)
 
         self.renderer = Renderer(baseDir)
-
-    def start(self, port=8000):
         self.app = flask.Flask(__name__)
 
         @self.app.route('/')
@@ -23,11 +22,13 @@ class Server:
             print(path)
             if path.endswith("/") or path.endswith(".md"):
                 path = "/" + path if path != "/" else "/"
-                if self.renderer.exists(path):
+                try:
                     return self.renderer.render(path)
-                else: 
+                except FileNotFoundError as e:
                     return flask.abort(404)
             else:
                 return flask.send_from_directory(self.baseDir, path)
 
-        self.app.run(host="localhost", port=port)
+    def start(self, port=8000, host="127.0.0.1"):
+        with simple_server.make_server(host, port, self.app) as httpd:
+            httpd.serve_forever()
