@@ -20,12 +20,14 @@ class Server:
         @self.app.route('/<path:path>')
         def serve(path):
             print(path)
-            if path.endswith("/") or path.endswith(".md"):
+            if path.endswith("/") or path.endswith(".html"):
                 path = "/" + path if path != "/" else "/"
                 try:
                     return self.renderer.render(path)
                 except FileNotFoundError as e:
                     return flask.abort(404)
+            elif path.endswith(".md"):
+                return flask.redirect("/{}html".format(path[:-2]))
             else:
                 return flask.send_from_directory(self.baseDir, path)
 

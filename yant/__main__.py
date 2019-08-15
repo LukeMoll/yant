@@ -41,6 +41,7 @@ Types of files
     args = parser.parse_args()
 
     s = Server(args.basedir)
+    print("Listening on http://{}:{}".format(args.host, args.port))
     s.start(port=args.port, host=args.host)
 
 if __name__ == "__main__":

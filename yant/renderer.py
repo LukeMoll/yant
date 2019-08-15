@@ -4,12 +4,9 @@ import jinja2
 import markdown2
 import yaml
 
-
 import sys
 sys.setrecursionlimit(100)
 
-# TODO:
-# - Add filesystem support to context
 
 class Renderer:
 
@@ -34,6 +31,7 @@ class Renderer:
 
     def render(self, path):
         if path.endswith("/"): path += "index.md"
+        elif path.endswith(".html"): path = path[:-4] + "md"
         manifest = self.read_manifest(path)
         html = self.read_content(path)
 
