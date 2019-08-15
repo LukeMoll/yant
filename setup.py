@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name="Yant",
-    version="1.3",
+    version="1.4",
     description="Yet Another Note Taker - Markdown and Jinja templating for your notes",
     author="Luke Moll",
     url="https://github.com/lukemoll/yant",

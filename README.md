@@ -12,5 +12,7 @@ Yant renders, templates, and serves notes written in Markdown with Jinja2 templa
 - [x] Move to production server instead of Flask
 - [ ] Add filesystem context
 - [ ] Livereload?
-- [ ] `yant freeze` export to all static HTML
+- [x] `yant freeze` export to all static HTML
 - [x] Documentation on Jinja variables
+- [ ] Usage docs in README
+- [ ] Refactor to do filenames *better*
