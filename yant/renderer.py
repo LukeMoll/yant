@@ -1,9 +1,11 @@
 import os.path
 import copy
+from functools import partial
 import jinja2
 import markdown2
 import yaml
 
+from .utils import get_fs_path, get_resource_path
 import sys
 sys.setrecursionlimit(100)
 
@@ -14,6 +16,8 @@ class Renderer:
         assert os.path.exists(baseDir), "{} does not exist".format(baseDir)
         assert os.path.isdir(baseDir), "{} is not a folder".format(baseDir)
         self.baseDir = os.path.abspath(baseDir)
+        self.fs_path = partial(get_fs_path, self.baseDir)
+        self.res_path = partial(get_resource_path, self.baseDir)
 
         self.templates = jinja2.Environment(
             loader=jinja2.FileSystemLoader(baseDir)
@@ -23,17 +27,15 @@ class Renderer:
 
         self.md2 = markdown2.Markdown(extras=["metadata"])
 
-        def normalize(path):
-            if path.startswith("/"):
-                return self.baseDir + path
-            else: raise Exception("Invalid path: no leading /")
-        self.normalize = normalize # don't need to do this like this
+    def render(self, rpath : str):
+        assert not rpath.startswith("/"), "rpath cannot begin with /"
 
-    def render(self, path):
-        if path.endswith("/"): path += "index.md"
-        elif path.endswith(".html"): path = path[:-4] + "md"
-        manifest = self.read_manifest(path)
-        html = self.read_content(path)
+        if rpath == "": rpath = "index.html"
+        elif rpath.endswith("/"): rpath += "index.md"
+        elif rpath.endswith(".html"): rpath = rpath[:-4] + "md"
+        
+        manifest = self.read_manifest(rpath)
+        html = self.read_content(rpath)
 
         context = merge({'body': html}, html.metadata, manifest)
         template = self.default_template
@@ -41,41 +43,52 @@ class Renderer:
             template = self.templates.get_template(context["template"])
         return template.render(**context)
 
-    def read_manifest(self, path):
+    def read_manifest(self, rpath):
         """Reads and inherits all the manifest.yaml files that relate to the resource at `path`
         
         Args:
-            path (string): An absolute resource path --  the topmost folder is "/", equating to self.baseDir
+            rpath (string): An absolute resource path --  the topmost folder is "", equating to self.baseDir. Must not start with leading /
         
         Returns:
             dict: merged dictionary of all the manifests in the tree
         """
-        # I really don't like how this handles real and resource paths
-        filename = self.normalize(os.path.join(os.path.dirname(path), "manifest.yaml"))
+
+        filename = os.path.join(
+            self.fs_path(rpath) if rpath.endswith("/") # We're referring to the folder
+            else os.path.dirname(self.fs_path(rpath)), # We want the folder containing rpath
+            "manifest.yaml"
+        )
 
         obj = {}        
         if os.path.exists(filename):
             with open(filename) as fd:
                 obj = yaml.safe_load(fd)
         
-        if os.path.dirname(path) == "/":
+        if os.path.dirname(rpath) == "":
             return obj
         else:
-            parentPath = os.path.abspath(os.path.join(
-                os.path.dirname(path),
-                os.path.pardir,
-                "file" # we need a file at the end or we'll refer to the directory, not the file
-            ))
+            try:
+                parentPath = self.res_path(os.path.join(
+                    os.path.dirname(filename),
+                    os.path.pardir
+                ))
+                if parentPath != "":
+                    parentPath += "/" # We're referring to the folder
+                
+            except FileNotFoundError as e:
+                print(e)
+                print(rpath)
+                print(filename)
+
             return merge(obj, self.read_manifest(parentPath))
 
-    def read_content(self, path): 
-        filename = self.normalize(path)
+    def read_content(self, rpath): 
+        filename = self.fs_path(rpath)
         with open(filename) as fd:
             return self.md2.convert(fd.read())
 
-    def exists(self, path):
-        norm = self.normalize(path)
-        return os.path.exists(norm)
+    def exists(self, rpath):
+        return os.path.exists(self.fs_path(rpath))
 
 def merge(*args): 
     res = {}

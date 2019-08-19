@@ -15,4 +15,4 @@ Yant renders, templates, and serves notes written in Markdown with Jinja2 templa
 - [x] `yant freeze` export to all static HTML
 - [x] Documentation on Jinja variables
 - [ ] Usage docs in README
-- [ ] Refactor to do filenames *better*
+- [x] Refactor to do filenames *better*

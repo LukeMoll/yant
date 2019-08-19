@@ -1,6 +1,6 @@
 import os.path
-import flask
 from wsgiref import simple_server
+import flask
 
 from .renderer import Renderer
 
@@ -15,21 +15,20 @@ class Server:
         self.app = flask.Flask(__name__)
 
         @self.app.route('/')
-        def index(): return serve("/")
+        def index(): return serve("")
 
-        @self.app.route('/<path:path>')
-        def serve(path):
-            print(path)
-            if path.endswith("/") or path.endswith(".html"):
-                path = "/" + path if path != "/" else "/"
+        @self.app.route('/<path:rpath>')
+        def serve(rpath):
+            if rpath.endswith("/") or rpath.endswith(".html"):
                 try:
-                    return self.renderer.render(path)
+                    return self.renderer.render(rpath)
                 except FileNotFoundError as e:
+                    print(e)
                     return flask.abort(404)
-            elif path.endswith(".md"):
-                return flask.redirect("/{}html".format(path[:-2]))
+            elif rpath.endswith(".md"):
+                return flask.redirect("/{}html".format(rpath[:-2]))
             else:
-                return flask.send_from_directory(self.baseDir, path)
+                return flask.send_from_directory(self.baseDir, rpath)
 
     def start(self, port=8000, host="127.0.0.1"):
         with simple_server.make_server(host, port, self.app) as httpd:

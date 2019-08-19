@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import argparse
-import os 
+import os
+import functools 
 from shutil import copyfile, rmtree
-from yant import Server, Renderer
+from yant import Server, Renderer, get_fs_path, get_resource_path
 
 def main():
     parser = argparse.ArgumentParser(epilog=r"""
@@ -70,35 +71,44 @@ def freeze(src, dest, copy_special=False, force_empty=False):
                 else:
                     os.remove(fn)
         else:
-            print(dest, " is not empty!") # TODO: add --force option to empty directory first
+            print(dest, " is not empty!")
             exit(2)
 
     # dest now exists and is an empty directory
     r = Renderer(src)
 
     for root, dirs, files in os.walk(src):
+        print(root)
         def mkrel(path):
+            raise Exception("mkrel!")
             path = path.replace(src, "", 1)
             return path[1:] if path.startswith("/") else path
+        
+        fs_path = functools.partial(get_fs_path, dest)
+        res_path = functools.partial(get_resource_path, src)
 
         for d in dirs:
-            os.mkdir(os.path.join(dest, mkrel(root), d))
+            os.mkdir(fs_path(res_path(os.path.join(root, d))))
 
         for f in files:
             if f.endswith(".md"):
-                fn = os.path.join(dest, mkrel(root),f[:-2] + "html")
-                with open(fn, 'w') as fd:
+                filename = fs_path(res_path(os.path.join(
+                    root, f[:-2] + "html"
+                )))
+                print(f"Filename: {filename}")
+
+                with open(filename, 'w') as fd:
                     fd.write(r.render(
-                        "/" + os.path.join(mkrel(root), f)
+                        res_path(os.path.join(root, f))
                     ))
-                print("Rendered ", fn)
+                print("Rendered ", filename)
             elif (f.endswith(".jinja2") or f.endswith(".yml")):
                 if copy_special:
-                    copyfile(os.path.join(root, f), os.path.join(dest, mkrel(root), f))
-                    print("Copied   ", os.path.join(dest, mkrel(root), f))
+                    copyfile(os.path.join(root, f), fs_path(res_path(os.path.join(root, f))))
+                    print("Copied   ", fs_path(res_path(os.path.join(root, f))))
             else:
-                copyfile(os.path.join(root, f), os.path.join(dest, mkrel(root), f))
-                print("Copied   ", os.path.join(dest, mkrel(root), f))
+                copyfile(os.path.join(root, f), fs_path(res_path(os.path.join(root, f))))
+                print("Copied   ", fs_path(res_path(os.path.join(root, f))))
 
 if __name__ == "__main__":
     main()
