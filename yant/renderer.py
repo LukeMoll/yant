@@ -2,7 +2,7 @@ import os.path
 import copy
 from functools import partial
 import jinja2
-import markdown2
+import markdown
 import yaml
 
 from .utils import get_fs_path, get_resource_path
@@ -25,7 +25,8 @@ class Renderer:
 
         self.default_template = jinja2.Template("""<html><body>{{ body }}</body></html>""")
 
-        self.md2 = markdown2.Markdown(extras=["metadata"])
+        #self.md2 = markdown2.Markdown(extras=["metadata"])
+        self.md = markdown.Markdown(extensions=["meta"])
 
     def render(self, rpath : str):
         assert not rpath.startswith("/"), "rpath cannot begin with /"
@@ -35,9 +36,10 @@ class Renderer:
         if rpath.endswith(".html"): rpath = rpath[:-4] + "md"
         
         manifest = self.read_manifest(rpath)
-        html = self.read_content(rpath)
+        (html, meta) = self.read_content(rpath)
+        meta = dict(map(lambda t: (t[0], ";".join(t[1])), meta.items()))
 
-        context = merge({'body': html}, html.metadata, manifest)
+        context = merge({'body': html}, meta, manifest)
         template = self.default_template
         if "template" in context and context["template"] is not None:
             template = self.templates.get_template(context["template"])
@@ -85,7 +87,8 @@ class Renderer:
     def read_content(self, rpath): 
         filename = self.fs_path(rpath)
         with open(filename) as fd:
-            return self.md2.convert(fd.read())
+            self.md.reset()
+            return (self.md.convert(fd.read()), self.md.Meta)
 
     def exists(self, rpath):
         return os.path.exists(self.fs_path(rpath))
