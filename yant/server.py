@@ -1,8 +1,11 @@
 import os.path
 from wsgiref import simple_server
+from socketserver import ThreadingMixIn
 import flask
 
 from .renderer import Renderer
+
+class ThreadingWSGIServer (ThreadingMixIn, simple_server.WSGIServer): pass
 
 class Server:
 
@@ -19,7 +22,7 @@ class Server:
 
         @self.app.route('/<path:rpath>')
         def serve(rpath):
-            if rpath.endswith("/") or rpath.endswith(".html"):
+            if rpath.endswith("/") or rpath.endswith(".html") or rpath == "":
                 try:
                     return self.renderer.render(rpath)
                 except FileNotFoundError as e:
@@ -31,5 +34,5 @@ class Server:
                 return flask.send_from_directory(self.baseDir, rpath)
 
     def start(self, port=8000, host="127.0.0.1"):
-        with simple_server.make_server(host, port, self.app) as httpd:
+        with simple_server.make_server(host, port, self.app, server_class=ThreadingWSGIServer) as httpd:
             httpd.serve_forever()

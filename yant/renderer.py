@@ -31,8 +31,8 @@ class Renderer:
         assert not rpath.startswith("/"), "rpath cannot begin with /"
 
         if rpath == "": rpath = "index.html"
-        elif rpath.endswith("/"): rpath += "index.md"
-        elif rpath.endswith(".html"): rpath = rpath[:-4] + "md"
+        if rpath.endswith("/"): rpath += "index.md"
+        if rpath.endswith(".html"): rpath = rpath[:-4] + "md"
         
         manifest = self.read_manifest(rpath)
         html = self.read_content(rpath)
