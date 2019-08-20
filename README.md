@@ -14,8 +14,10 @@ Yant renders, templates, and serves notes written in Markdown with Jinja2 templa
   - [ ] Filesystem
   - [ ] Meta `{{ context }}` var, embodying whole context as JSON
   - [ ] URL query parameters? (Only needed for server side, JS can retrieve fine).
+  - [ ] Move special contexts to `__` prefix (breaking)
 - [ ] Livereload?
 - [x] `yant freeze` export to all static HTML
 - [x] Documentation on Jinja variables
 - [ ] Usage docs in README
 - [x] Refactor to do filenames *better*
+- [ ] Migrate to [python-markdown](https://github.com/Python-Markdown/markdown) to better enable future extensions
