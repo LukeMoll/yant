@@ -95,7 +95,6 @@ def freeze(src, dest, copy_special=False, force_empty=False):
                 filename = fs_path(res_path(os.path.join(
                     root, f[:-2] + "html"
                 )))
-                print(f"Filename: {filename}")
 
                 with open(filename, 'w') as fd:
                     fd.write(r.render(
