@@ -25,8 +25,7 @@ class Renderer:
 
         self.default_template = jinja2.Template("""<html><body>{{ body }}</body></html>""")
 
-        #self.md2 = markdown2.Markdown(extras=["metadata"])
-        self.md = markdown.Markdown(extensions=["meta"])
+        self.md = markdown.Markdown(extensions=["meta", "tables", "fenced_code", "def_list", "abbr", "sane_lists"])
 
     def render(self, rpath : str):
         assert not rpath.startswith("/"), "rpath cannot begin with /"
