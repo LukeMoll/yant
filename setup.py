@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name="Yant",
-    version="1.8",
+    version="1.9",
     description="Yet Another Note Taker - Markdown and Jinja templating for your notes",
     author="Luke Moll",
     url="https://github.com/lukemoll/yant",
@@ -13,7 +13,8 @@ setup(
         "pyyaml",
         "markdown",
         "MarkdownHighlight",
-        "markdown-checklist"
+        "markdown-checklist",
+        "livereload"
     ],
     entry_points={
         "console_scripts": [

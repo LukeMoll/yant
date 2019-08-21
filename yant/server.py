@@ -2,6 +2,7 @@ import os.path
 from wsgiref import simple_server
 from socketserver import ThreadingMixIn
 import flask
+import livereload as lreload
 
 from .renderer import Renderer
 
@@ -33,6 +34,12 @@ class Server:
             else:
                 return flask.send_from_directory(self.baseDir, rpath)
 
-    def start(self, port=8000, host="127.0.0.1"):
-        with simple_server.make_server(host, port, self.app, server_class=ThreadingWSGIServer) as httpd:
-            httpd.serve_forever()
+    def start(self, port=8000, host="127.0.0.1", livereload=False):
+        if livereload:
+            live_server = lreload.Server(self.app)
+            live_server.watch(self.baseDir)
+            live_server.serve(port=port, host=host)
+        else:
+            with simple_server.make_server(host, port, self.app, server_class=ThreadingWSGIServer) as httpd:
+                print("Listening on http://{}:{}".format(args.host, args.port)) # livereload prints its own
+                httpd.serve_forever()

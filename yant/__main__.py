@@ -49,6 +49,7 @@ Types of files
     parser.add_argument("--freeze", type=str, metavar="DESTDIR", help="Export a rendered copy of the basedir to DESTDIR, suitable for serving statically.")
     parser.add_argument("--copy-special", action='store_true', help="When used with --freeze, copies .jinja2 and .yml files to DESTDIR")
     parser.add_argument("--force-empty", action='store_true', help="When used with --freeze, will empty DESTDIR before use")
+    parser.add_argument("--livereload", "-l", action='store_true', help="Watches basedir and reloads the browser when files change.")
     args = parser.parse_args()
 
     if args.freeze is not None:
@@ -56,8 +57,7 @@ Types of files
         exit(0)
 
     s = Server(args.basedir)
-    print("Listening on http://{}:{}".format(args.host, args.port))
-    s.start(port=args.port, host=args.host)
+    s.start(port=args.port, host=args.host, livereload=args.livereload)
 
 
 

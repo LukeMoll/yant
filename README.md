@@ -14,7 +14,7 @@ Yant renders, templates, and serves notes written in Markdown with Jinja2 templa
   - [x] Yant `{{ version }}`, `{{ date }}`
   - [ ] `{{ git }}`?
   - [x] Move special contexts to `__` prefix (breaking)
-- [ ] Livereload?
+- [x] Livereload?
 - [ ] Usage docs in README
 - [x] Enable GFM tables, fenced code blocks
 - [x] Checklists? (Needs custom extension)
