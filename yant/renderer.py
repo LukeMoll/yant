@@ -1,8 +1,12 @@
 import os.path
 import copy
 from functools import partial
+import pkg_resources
+import datetime
+
 import jinja2
 import yaml
+import json
 import markdown
 from MarkdownHighlight.highlight import HighlightExtension
 from markdown_checklist.extension import ChecklistExtension
@@ -25,7 +29,7 @@ class Renderer:
             loader=jinja2.FileSystemLoader(baseDir)
         )
 
-        self.default_template = jinja2.Template("""<html><body>{{ body }}</body></html>""")
+        self.default_template = jinja2.Template("""<html><body>{{ __body__ }}</body></html>""")
 
         self.md = markdown.Markdown(extensions=[
             "meta",             # Built-in extensions
@@ -49,11 +53,24 @@ class Renderer:
         (html, meta) = self.read_content(rpath)
         meta = dict(map(lambda t: (t[0], ";".join(t[1])), meta.items()))
 
-        context = merge({'body': html}, meta, manifest)
+        context = merge({'__body__': html}, self.special_context(), meta, manifest)
+        context["__context__"] = json.dumps(context, sort_keys=True, indent=4)
+
         template = self.default_template
-        if "template" in context and context["template"] is not None:
-            template = self.templates.get_template(context["template"])
+        if "__template__" in context and context["__template__"] is not None:
+            template = self.templates.get_template(context["__template__"])
         return template.render(**context)
+
+    def special_context(self):
+        try:
+            version = pkg_resources.get_distribution("yant").version
+        except pkg_resources.DistributionNotFound as e:
+            print(e) # this _really_ shouldn't happen
+            version = None
+        return {
+            "__version__": version,
+            "__date__": datetime.datetime.now().isoformat()
+        }
 
     def read_manifest(self, rpath):
         """Reads and inherits all the manifest.yaml files that relate to the resource at `path`

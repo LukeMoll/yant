@@ -15,7 +15,7 @@ Types of files
 
    Content
     Markdown (.md) files will be converted to HTML, and then passed to the
-    appropriate template as the {{ body }} field. You can add Jekyll-style 
+    appropriate template as the {{ __body__ }} field. You can add Jekyll-style 
     frontmatter by adding "---" to the top of your document, and "---\n" after
     the frontmatter has ended.
 
@@ -28,11 +28,16 @@ Types of files
     value is substitued into the template. Manifests in deeper directories take
     precedence over ones further up the directory tree. Values defined in the 
     frontmatter take the highest precedence.
+    In addition to the {{ __body__ }} variable, Yant provides several other 
+    special variables, each surrounded in double underscores to set them apart:
+    {{ __date__ }}: Date and time in ISO8601 format
+    {{ __version__ }}: Version of Yant
+    {{ __context__ }}: Entire context object as a pretty JSON string
 
    Templates
     You can put Jinja2 templates anywhere in the directory structure. The value
-    {{ template }} decides which template file to use. References are always 
-    relative to the base directory. If basedir/subdirectory/content.md 
+    {{ __template__ }} decides which template file to use. References are 
+    always relative to the base directory. If basedir/subdirectory/content.md
     specifies "template: default.jinja2", then the template located at 
     basedir/default.jinja2 will be used.
     

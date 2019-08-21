@@ -9,10 +9,11 @@ Yant renders, templates, and serves notes written in Markdown with Jinja2 templa
 
 - [ ] More contexts:
   - [ ] Filesystem
-  - [ ] Meta `{{ context }}` var, embodying whole context as JSON
+  - [x] Meta `{{ context }}` var, embodying whole context as JSON
   - [ ] URL query parameters? (Only needed for server side, JS can retrieve fine).
-  - [ ] Yant `{{ version }}`, `{{ date }}`, `{{ git }}`?
-  - [ ] Move special contexts to `__` prefix (breaking)
+  - [x] Yant `{{ version }}`, `{{ date }}`
+  - [ ] `{{ git }}`?
+  - [x] Move special contexts to `__` prefix (breaking)
 - [ ] Livereload?
 - [ ] Usage docs in README
 - [x] Enable GFM tables, fenced code blocks
