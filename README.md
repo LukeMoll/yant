@@ -16,5 +16,5 @@ Yant renders, templates, and serves notes written in Markdown with Jinja2 templa
 - [ ] Livereload?
 - [ ] Usage docs in README
 - [x] Enable GFM tables, fenced code blocks
-- [ ] Checklists? (Needs custom extension)
+- [x] Checklists? (Needs custom extension)
 - [x] Migrate to [python-markdown](https://github.com/Python-Markdown/markdown) to better enable future extensions

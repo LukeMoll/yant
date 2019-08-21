@@ -2,8 +2,10 @@ import os.path
 import copy
 from functools import partial
 import jinja2
-import markdown
 import yaml
+import markdown
+from MarkdownHighlight.highlight import HighlightExtension
+from markdown_checklist.extension import ChecklistExtension
 
 from .utils import get_fs_path, get_resource_path
 import sys
@@ -25,7 +27,16 @@ class Renderer:
 
         self.default_template = jinja2.Template("""<html><body>{{ body }}</body></html>""")
 
-        self.md = markdown.Markdown(extensions=["meta", "tables", "fenced_code", "def_list", "abbr", "sane_lists"])
+        self.md = markdown.Markdown(extensions=[
+            "meta",             # Built-in extensions
+            "tables", 
+            "fenced_code", 
+            "def_list", 
+            "abbr", 
+            "sane_lists",
+            HighlightExtension(), # extensions from pip
+            ChecklistExtension()
+        ])
 
     def render(self, rpath : str):
         assert not rpath.startswith("/"), "rpath cannot begin with /"
