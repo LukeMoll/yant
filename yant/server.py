@@ -2,6 +2,7 @@ import os.path
 from wsgiref import simple_server
 from socketserver import ThreadingMixIn
 import flask
+import jinja2
 import livereload as lreload
 
 from .renderer import Renderer
@@ -15,11 +16,14 @@ class Server:
         assert os.path.isdir(baseDir), "{} is not a folder".format(baseDir)
         self.baseDir = os.path.abspath(baseDir)
 
-        self.renderer = Renderer(baseDir)
         self.app = flask.Flask(__name__)
-        # TODO: 
-        #  - use `jinja_option` https://stackoverflow.com/a/26539528
-        #  - pass Flask app to Renderer
+        jinja_options = self.app.jinja_options.copy()
+        jinja_options.update(dict(
+            loader=jinja2.FileSystemLoader(baseDir)
+        ))
+        self.app.jinja_options = jinja_options
+
+        self.renderer = Renderer(baseDir)
 
         @self.app.route('/')
         def index(): return serve("")
@@ -44,5 +48,5 @@ class Server:
             live_server.serve(port=port, host=host)
         else:
             with simple_server.make_server(host, port, self.app, server_class=ThreadingWSGIServer) as httpd:
-                print("Listening on http://{}:{}".format(args.host, args.port)) # livereload prints its own
+                print("Listening on http://{}:{}".format(host, port)) # livereload prints its own
                 httpd.serve_forever()

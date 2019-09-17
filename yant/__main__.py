@@ -3,7 +3,7 @@ import argparse
 import os
 import functools 
 from shutil import copyfile, rmtree
-from yant import Server, Renderer, get_fs_path, get_resource_path
+from yant import Server, get_fs_path, get_resource_path
 
 def main():
     parser = argparse.ArgumentParser(epilog=r"""
@@ -60,7 +60,6 @@ Types of files
     s.start(port=args.port, host=args.host, livereload=args.livereload)
 
 
-# TODO: move this into its own file?
 def freeze(src, dest, copy_special=False, force_empty=False):
     if not os.path.exists(dest):
         # dest does not exist, we should create it
@@ -80,40 +79,41 @@ def freeze(src, dest, copy_special=False, force_empty=False):
             exit(2)
 
     # dest now exists and is an empty directory
-    r = Renderer(src)
-    # TODO: create instance of Server instead and replace r with <Server>.renderer
+    s = Server(src)
+    r = s.renderer
 
-    for root, dirs, files in os.walk(src):
-        print(root)
-        def mkrel(path):
-            raise Exception("mkrel!")
-            path = path.replace(src, "", 1)
-            return path[1:] if path.startswith("/") else path
-        
-        fs_path = functools.partial(get_fs_path, dest)
-        res_path = functools.partial(get_resource_path, src)
+    with s.app.app_context(): # https://stackoverflow.com/a/50927259
+        for root, dirs, files in os.walk(src):
+            print(root)
+            def mkrel(path):
+                raise Exception("mkrel!")
+                path = path.replace(src, "", 1)
+                return path[1:] if path.startswith("/") else path
+            
+            fs_path = functools.partial(get_fs_path, dest)
+            res_path = functools.partial(get_resource_path, src)
 
-        for d in dirs:
-            os.mkdir(fs_path(res_path(os.path.join(root, d))))
+            for d in dirs:
+                os.mkdir(fs_path(res_path(os.path.join(root, d))))
 
-        for f in files:
-            if f.endswith(".md"):
-                filename = fs_path(res_path(os.path.join(
-                    root, f[:-2] + "html"
-                )))
+            for f in files:
+                if f.endswith(".md"):
+                    filename = fs_path(res_path(os.path.join(
+                        root, f[:-2] + "html"
+                    )))
 
-                with open(filename, 'w') as fd:
-                    fd.write(r.render(
-                        res_path(os.path.join(root, f))
-                    ))
-                print("Rendered ", filename)
-            elif (f.endswith(".jinja2") or f.endswith(".yml")):
-                if copy_special:
+                    with open(filename, 'w') as fd:
+                        fd.write(r.render(
+                            res_path(os.path.join(root, f))
+                        ))
+                    print(" Rendered ", filename)
+                elif (f.endswith(".jinja2") or f.endswith(".yml")):
+                    if copy_special:
+                        copyfile(os.path.join(root, f), fs_path(res_path(os.path.join(root, f))))
+                        print(" Copied   ", fs_path(res_path(os.path.join(root, f))))
+                else:
                     copyfile(os.path.join(root, f), fs_path(res_path(os.path.join(root, f))))
-                    print("Copied   ", fs_path(res_path(os.path.join(root, f))))
-            else:
-                copyfile(os.path.join(root, f), fs_path(res_path(os.path.join(root, f))))
-                print("Copied   ", fs_path(res_path(os.path.join(root, f))))
+                    print(" Copied   ", fs_path(res_path(os.path.join(root, f))))
 
 if __name__ == "__main__":
     main()

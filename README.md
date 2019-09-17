@@ -32,8 +32,8 @@ See `yant -h` for more details.
 
 ## TODO
 
+- [x] Use Flask's internal Jinja instead of calling Jinja explicitly
 - [ ] More contexts:
-  - [ ] Use Flask's internal Jinja instead of calling Jinja explicitly
   - [ ] Filesystem
   - [ ] URL query parameters? (Only needed for server side, JS can retrieve fine).
   - [ ] `{{ git }}`?

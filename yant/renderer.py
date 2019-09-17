@@ -4,7 +4,7 @@ from functools import partial
 import pkg_resources
 import datetime
 
-import jinja2
+import flask
 import yaml
 import json
 import markdown
@@ -18,18 +18,14 @@ sys.setrecursionlimit(100)
 
 class Renderer:
 
-    def __init__(self, baseDir): # TODO: take Flask app argument
+    def __init__(self, baseDir):
         assert os.path.exists(baseDir), "{} does not exist".format(baseDir)
         assert os.path.isdir(baseDir), "{} is not a folder".format(baseDir)
         self.baseDir = os.path.abspath(baseDir)
         self.fs_path = partial(get_fs_path, self.baseDir)
         self.res_path = partial(get_resource_path, self.baseDir)
 
-        self.templates = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(baseDir)
-        )
-
-        self.default_template = jinja2.Template("""<html><body>{{ __body__ }}</body></html>""")
+        self.default_template_string = """<html><body>{{ __body__ }}</body></html>"""
 
         self.md = markdown.Markdown(extensions=[
             "meta",             # Built-in extensions
@@ -56,10 +52,10 @@ class Renderer:
         context = merge({'__body__': html}, self.special_context(), meta, manifest)
         context["__context__"] = json.dumps(context, sort_keys=True, indent=4)
 
-        template = self.default_template
         if "__template__" in context and context["__template__"] is not None:
-            template = self.templates.get_template(context["__template__"])
-        return template.render(**context) # TODO: replace with self.app.render_template(context["__template__"], context)
+            return flask.render_template(context["__template__"], **context)
+        else:
+            return flask.render_template_string(self.default_template_string, **context)
 
     def special_context(self):
         try:
