@@ -17,6 +17,9 @@ class Server:
 
         self.renderer = Renderer(baseDir)
         self.app = flask.Flask(__name__)
+        # TODO: 
+        #  - use `jinja_option` https://stackoverflow.com/a/26539528
+        #  - pass Flask app to Renderer
 
         @self.app.route('/')
         def index(): return serve("")

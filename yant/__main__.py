@@ -60,7 +60,7 @@ Types of files
     s.start(port=args.port, host=args.host, livereload=args.livereload)
 
 
-
+# TODO: move this into its own file?
 def freeze(src, dest, copy_special=False, force_empty=False):
     if not os.path.exists(dest):
         # dest does not exist, we should create it
@@ -81,6 +81,7 @@ def freeze(src, dest, copy_special=False, force_empty=False):
 
     # dest now exists and is an empty directory
     r = Renderer(src)
+    # TODO: create instance of Server instead and replace r with <Server>.renderer
 
     for root, dirs, files in os.walk(src):
         print(root)

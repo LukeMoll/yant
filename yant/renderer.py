@@ -18,7 +18,7 @@ sys.setrecursionlimit(100)
 
 class Renderer:
 
-    def __init__(self, baseDir):
+    def __init__(self, baseDir): # TODO: take Flask app argument
         assert os.path.exists(baseDir), "{} does not exist".format(baseDir)
         assert os.path.isdir(baseDir), "{} is not a folder".format(baseDir)
         self.baseDir = os.path.abspath(baseDir)
@@ -59,7 +59,7 @@ class Renderer:
         template = self.default_template
         if "__template__" in context and context["__template__"] is not None:
             template = self.templates.get_template(context["__template__"])
-        return template.render(**context)
+        return template.render(**context) # TODO: replace with self.app.render_template(context["__template__"], context)
 
     def special_context(self):
         try:
