@@ -37,3 +37,8 @@ See `yant -h` for more details.
   - [ ] Filesystem
   - [ ] URL query parameters? (Only needed for server side, JS can retrieve fine).
   - [ ] `{{ git }}`?
+- [ ] Use [importlib.util][1] to allow user to [add functions][2] (and extensions) from baseDir
+
+
+[1]: https://stackoverflow.com/a/67692
+[2]: https://stackoverflow.com/a/7226047
