@@ -33,6 +33,7 @@ See `yant -h` for more details.
 ## TODO
 
 - [x] Use Flask's internal Jinja instead of calling Jinja explicitly
+- [ ] Add Jinja function to get context from perspective of other file (params is absolute or relative resource path)
 - [ ] More contexts:
   - [ ] Filesystem
   - [ ] URL query parameters? (Only needed for server side, JS can retrieve fine).
