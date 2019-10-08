@@ -17,6 +17,10 @@ class Server:
         self.baseDir = os.path.abspath(baseDir)
 
         self.app = flask.Flask(__name__)
+        self.app.config.update(
+            TEMPLATES_AUTO_RELOAD=True
+        )
+
         jinja_options = self.app.jinja_options.copy()
         jinja_options.update(dict(
             loader=jinja2.FileSystemLoader(baseDir)
